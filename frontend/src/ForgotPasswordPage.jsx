@@ -8,6 +8,7 @@
 import React, { useState } from "react";
 import "./SignupPage.css";
 import { withMinDelay } from "./withMinDelay";
+import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -90,7 +91,7 @@ export default function ForgotPasswordPage() {
           </form>
 
           <p className="signin">
-            Remembered it? <a href="/login">Back to login</a>
+            Remembered it? <Link to="/login">Back to login</Link>
           </p>
         </div>
       </div>
