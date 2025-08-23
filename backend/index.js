@@ -40,7 +40,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions)); // ← handle OPTIONS preflights
+app.options(".*", cors(corsOptions)); // ← handle OPTIONS preflights
 
 app.use(express.json());
 app.use(cookieParser());
