@@ -23,8 +23,16 @@ app.use(express.json());
 app.use(cookieParser());
 
 // REQUIRED for cookie-based auth from the browser
+const allowed = (process.env.CLIENT_URLS || process.env.CLIENT_URL || '')
+  .split(',')
+  .map(s => s.trim())
+  .filter(Boolean);
+
 app.use(cors({
-  origin: CLIENT_URL,
+  origin(origin, cb) {
+    if (!origin) return cb(null, true);          // server-to-server, curl, etc.
+    return cb(null, allowed.includes(origin));   // allow only listed origins
+  },
   credentials: true,
 }));
 
