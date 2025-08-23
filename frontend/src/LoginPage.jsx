@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SignupPage.css";
 import { withMinDelay } from "./withMinDelay";
+import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -137,7 +138,7 @@ export default function LoginPage() {
             </label>
 
             <div className="signin" style={{ textAlign: "right", marginTop: "-6px" }}>
-              <a href="/forgot-password">Forgot password?</a>
+              <Link to="/forgot-password">Forgot password?</Link>
             </div>
 
             {err && <div className="mt-2" style={{ color: "#ff8a8a", fontSize: 14 }}>{err}</div>}
@@ -149,7 +150,7 @@ export default function LoginPage() {
           </form>
 
           <p className="signin">
-            New here? <a href="/signup">Create an account</a>
+            New here? <Link to="/signup">Create an account</Link>
           </p>
         </div>
       </div>
