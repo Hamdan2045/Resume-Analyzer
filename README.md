@@ -190,6 +190,4 @@ All are mounted under `/api/auth`:
 
 ---
 
-## 📜 License
 
-Private project — add a license if you plan to open‑source.
