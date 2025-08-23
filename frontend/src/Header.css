@@ -138,21 +138,19 @@
 }
 
 /* Ultra-small phones: optional tweaks */
-@media (max-width: 400px){
+@media (max-width: 768px){
+  .auth-group{ margin-left:auto; }                  /* push name+button to right */
   .hi{
-    display:inline-block;
-    max-width: 60vw;          /* room for the button */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;  /* shows “Hi, Mohamed Ha…” */
-    vertical-align: middle;
+    display:inline !important;
+    max-width:55vw;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    font-size:.95rem;
   }
   .head .btn{
-    padding: 6px 12px;
-    font-size: .85rem;
-    line-height: 1;
-    height: 36px;
     display:inline-flex; align-items:center; justify-content:center;
-    vertical-align: middle;   /* aligns with the text baseline */
+    height:38px; line-height:1; padding:0 14px; font-size:.95rem;
   }
 }
+
