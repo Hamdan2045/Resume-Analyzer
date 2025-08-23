@@ -168,7 +168,7 @@ export default function VerifyEmail() {
           </form>
 
           <p className="signin">
-            Wrong inbox? <a href="/signup">Go back</a>
+           Wrong inbox? <Link to="/signup">Go back</Link>
           </p>
         </div>
       </div>
