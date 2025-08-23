@@ -46,9 +46,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 // Health check (handy to debug CORS quickly)
-app.get("/api/health", (req, res) => {
-  res.json({ ok: true, allow: [...allowedOrigins] });
-});
+
 
 // Routes
 app.use("/api/auth", router);
