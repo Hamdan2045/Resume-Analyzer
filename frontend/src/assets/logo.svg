@@ -1,0 +1,57 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="ResumeX Logo">
+  <!-- PALETTE
+       Dark:  #0B0720
+       Violet:#6F41D2
+       Lavend:#A78BFA
+       Light: #C4B5FD
+  -->
+
+  <!-- Background is transparent so it works on your hero.
+       (If you want a dark tile behind it, uncomment the rect below) -->
+  <!--
+  <rect x="16" y="16" width="480" height="480" rx="96" fill="#0B0720"/>
+  -->
+
+  <!-- Gradients -->
+  <defs>
+    <linearGradient id="gradMain" x1="120" y1="392" x2="392" y2="120" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#A78BFA"></stop>
+      <stop offset="100%" stop-color="#6F41D2"></stop>
+    </linearGradient>
+    <linearGradient id="gradAccent" x1="160" y1="420" x2="420" y2="160" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#C4B5FD"></stop>
+      <stop offset="100%" stop-color="#A78BFA"></stop>
+    </linearGradient>
+
+    <!-- Soft neon glow -->
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="8" result="b1"></feGaussianBlur>
+      <feGaussianBlur stdDeviation="18" in="SourceGraphic" result="b2"></feGaussianBlur>
+      <feMerge>
+        <feMergeNode in="b1"></feMergeNode>
+        <feMergeNode in="b2"></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+
+    <!-- Rounded stroke caps/corners -->
+    <style>
+      .stroked { fill: none; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </defs>
+
+  <!-- Stylized "R" (thick rounded stroke) -->
+  <!-- Shape: vertical stem + bowl + diagonal leg -->
+  <path class="stroked" filter="url(#glow)" d="M160 380 V160 H292
+           Q360 160 360 214
+           Q360 268 292 268
+           H208
+           L360 380" stroke="url(#gradMain)" stroke-width="32"></path>
+
+  <!-- Subtle "X" accent (two crossing strokes) -->
+  <path class="stroked" filter="url(#glow)" d="M235 205 L390 360" stroke="url(#gradAccent)" stroke-width="16"></path>
+  <path class="stroked" filter="url(#glow)" d="M390 205 L320 275" stroke="url(#gradAccent)" stroke-width="16"></path>
+
+  <!-- Tiny highlight ring (gives that glossy neon feel) -->
+  <circle cx="256" cy="256" r="210" fill="none" stroke="rgba(196,181,253,0.06)" stroke-width="2"></circle>
+</svg>

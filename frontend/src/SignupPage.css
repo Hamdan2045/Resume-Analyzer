@@ -1,0 +1,237 @@
+/* ===== THEME TOKENS (match hero) ===== */
+:root{
+  --bg-0:#07050f;            /* near-black */
+  --bg-1:#0e0a1f;            /* deep purple */
+  --ink:#ECE9FF;             /* heading/body */
+  --muted:#B8B4D7;           /* secondary text */
+  --stroke:255 255 255 / .08;
+
+  --accent:#A78BFA;          /* lavender */
+  --accent-2:#8B5CF6;        /* purple */
+  --accent-3:#C4B5FD;        /* light lavender */
+}
+
+/* ===== PAGE BACKDROP (mirrors hero) ===== */
+.signup-page{
+  min-height:100svh;
+  display:grid;
+  place-items:center;
+  color:var(--ink);
+  padding:28px;
+  background:
+    /* right glow “orb” like the hero */
+    radial-gradient(420px 420px at 72% 58%, rgba(167,139,250,.22), transparent 60%),
+    /* soft square glow behind left text block */
+    radial-gradient(900px 600px at 18% 40%, rgba(124,58,237,.28), transparent 60%),
+    /* subtle cyan tint */
+    radial-gradient(700px 500px at 78% 18%, rgba(56,189,248,.12), transparent 55%),
+    linear-gradient(180deg, var(--bg-0), var(--bg-1) 65%, #0b0720);
+  overflow:hidden;
+}
+
+/* pulsing ring near the “orb” */
+.signup-page::after{
+  content:"";
+  position:absolute; inset:0; pointer-events:none;
+  background:
+    radial-gradient(170px 170px at 72% 58%,
+      rgba(199,180,255,.55) 0%,
+      rgba(167,139,250,.28) 25%,
+      rgba(167,139,250,.14) 40%,
+      transparent 60%);
+  filter: blur(8px);
+  animation:pulse 3.6s ease-in-out infinite;
+  opacity:.7;
+}
+@keyframes pulse{
+  0%,100%{ transform:scale(1); opacity:.65; }
+  50%{ transform:scale(1.06); opacity:.9; }
+}
+
+/* ===== CARD ===== */
+.signup-card{
+  position:relative;
+  width:min(680px, 92vw);
+  border-radius:18px;
+  overflow:hidden;
+  isolation:isolate;
+  /* base shadow to “lift” like hero tiles */
+  box-shadow:
+    0 30px 70px rgba(17, 12, 39, .65),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* glass interior */
+.card-inner{
+  backdrop-filter: blur(16px);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.035));
+  border:1px solid rgb(var(--stroke));
+  border-radius:inherit;
+  padding:40px 34px 30px;
+  
+}
+.card-head{
+  text-align: center;
+}
+/* heading copy match */
+.card-head h1{
+  font-size: 2.6rem; /* Between earlier 1.8rem and 3rem */
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    225deg,
+    #e9dcff 10%,
+    #b488f2 45%,
+    #caa7fc 55%,
+    #f3eaff 90%
+  );
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: shimmerDiagonal 3s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 5px rgba(180, 136, 242, 0.35);
+}
+
+@keyframes shimmerDiagonal {
+  0% {
+    background-position: 0% 100%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+.card-head p{ margin:0 0 28px; color:var(--muted); }
+
+/* ===== FIELDS ===== */
+.form{ display:grid; gap:18px; }
+.field{ display:grid; gap:8px; }
+.field-label{ color:#dcd8ff; font-weight:650; }
+
+.field-wrap{ position:relative; display:block; }
+.field input{
+  width:515px; height:54px; border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(13,8,28,.6);
+  color:var(--ink);
+  padding:0 48px 0 46px;
+  outline:none;
+  transition:border-color .18s, box-shadow .18s, background .2s;
+}
+.field input::placeholder{ color:#9a96bb; }
+.field input:focus{
+  border-color:rgba(167,139,250,.65);
+  box-shadow:0 0 0 4px rgba(167,139,250,.18);
+  background:rgba(13,8,28,.72);
+}
+
+.icon{
+  position:absolute; top:50%; transform:translateY(-50%);
+  color:#9a96bb; display:grid; place-items:center;
+}
+.icon.left{ left:14px; }
+.icon.right{ right:12px; }
+.icon.eye{ background:transparent; border:0; padding:0; cursor:pointer; }
+
+/* ===== CTA (matches hero pill) ===== */
+.cta{
+border: 1px solid #6f41d2;
+  background-color: #6f41d2;
+  color: white;
+  border-radius: 12px;
+  padding: 0.8rem 1.6rem;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.cta:hover{
+  background-color: rgba(111, 65, 210, 0.25);
+  box-shadow: inset 0 -4px 18px rgba(111, 65, 210, 0.5);
+  backdrop-filter: blur(4px);
+  transform: scale(1.04);
+}
+
+.cta:active{ transform:translateY(1px); }
+
+/* small footer link */
+.signin{ text-align:center; margin-top:16px; color:var(--muted); }
+.signin a{ color:var(--accent); text-decoration:none; }
+.signin a:hover{ text-decoration:underline; }
+
+/* ===== HOVER GLOW FOLLOW (same as before, tuned) ===== */
+.signup-card::before{
+  content:"";
+  position:absolute; inset:-1px; border-radius:inherit; pointer-events:none;
+  background:
+    radial-gradient(180px 180px at var(--x, 60%) var(--y, 0%),
+      rgba(167,139,250,.33),
+      rgba(99,102,241,.24),
+      transparent 60%);
+  filter: blur(22px);
+  opacity:0; transition:opacity .25s ease; z-index:-1;
+  
+}
+.signup-card:hover::before{ opacity:1; }
+
+.signup-card::after{
+  content:"";
+  position:absolute; inset:0; border-radius:inherit; pointer-events:none;
+  box-shadow:
+    0 0 0 0 rgba(124,58,237,.12),
+    0 0 0 0 rgba(56,189,248,.10);
+  transition: box-shadow .25s ease;
+}
+.signup-card:hover::after{
+  box-shadow:
+    0 0 80px 24px rgba(124,58,237,.16),
+    0 0 140px 40px rgba(56,189,248,.12);
+}
+
+/* ===== OTP 6-box input ===== */
+.otp-grid{
+  display:flex;
+  gap:12px;
+  justify-content:center;
+  margin: 8px 0 16px;
+}
+
+.otp-box{
+  width:48px; height:58px;
+  text-align:center;
+  font-size:1.25rem;
+  font-weight:700;
+  color:var(--ink);
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(13,8,28,.6);
+  outline:none;
+  transition: border-color .18s, box-shadow .18s, background .2s, transform .12s;
+}
+
+.otp-box:hover{
+  border-color: rgba(167,139,250,.45);
+}
+
+.otp-box:focus{
+  border-color: rgba(167,139,250,.75);
+  box-shadow:
+    0 0 0 4px rgba(167,139,250,.18),
+    0 0 28px 6px rgba(124,58,237,.28),
+    0 0 40px 12px rgba(56,189,248,.12);
+  background: rgba(13,8,28,.72);
+  transform: translateY(-1px);
+}
+

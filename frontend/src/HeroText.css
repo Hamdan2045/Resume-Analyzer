@@ -1,0 +1,74 @@
+.hero-text-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* ensures left alignment */
+  justify-content: center; /* centers vertically in section */
+  min-height: 80vh;
+  padding: 0 4rem;
+  margin-top: 40px;
+  margin-left: 100px;
+  margin-bottom: 0;
+  text-align: left; /* VERY IMPORTANT to avoid centered text */
+}
+
+
+.hero-title {
+  font-size: 4rem;
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  color: white;
+  line-height: 1.2;
+ 
+}
+
+.type-text {
+  background: linear-gradient(225deg, #e9dcff, #b488f2);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+  font-size: 3.8rem;
+  font-weight: 700;
+}
+
+.cursor {
+  display: inline-block;
+  color: #b488f2;
+  animation: blink 1s step-end infinite;
+  font-weight: bold;
+  font-size: 4.5rem;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+.hero-subtitle {
+  margin-top: 1.5 rem;
+  font-size: 1.25rem;
+  color: #e0dbf7;
+  max-width: 600px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.btn {
+  margin-top: 2rem;
+  border: 1px solid #6f41d2;
+  background-color: #6f41d2;
+  color: white;
+  border-radius: 12px;
+  padding: 1rem 2rem;
+  font-weight: 600;
+  font-size: 1rem;
+  line-height: 100%;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  cursor: pointer;
+}
+
+.btn:hover {
+  background-color: rgba(111, 65, 210, 0.25);
+  box-shadow: inset 0 -4px 20px rgba(111, 65, 210, 0.5);
+}

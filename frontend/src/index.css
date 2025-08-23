@@ -1,0 +1,70 @@
+body {
+ 
+  height: 100vh;
+  background: #000000; /* pure black */
+  overflow: hidden;
+  position: relative;
+  font-family: 'Segoe UI', sans-serif;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+
+}
+
+/* Example page layout content */
+main {
+  position: relative;
+  z-index: 10;
+  color: white;
+  padding: 4rem;
+}
+
+/* Blobs (lighter, less intense) */
+.blob {
+  position: absolute;
+  width: 450px;
+  height: 450px;
+  background: radial-gradient(circle, #b266ff 0%, #aa66ff 40%, transparent 80%);
+  opacity: 0.45;
+  border-radius: 50%;
+  filter: blur(100px);
+  animation: float 20s ease-in-out infinite alternate;
+  mix-blend-mode: screen;
+  pointer-events: none;
+   z-index: 0
+}
+
+
+.blob:nth-child(1) {
+  top: -150px;
+  left: -150px;
+}
+
+.blob:nth-child(2) {
+  bottom: -120px;
+  right: -100px;
+  animation-delay: 6s;
+}
+
+@keyframes float {
+  0% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -20px) scale(1.05);
+  }
+  100% {
+    transform: translate(-20px, 20px) scale(0.95);
+  }
+}
+.section-1 {
+  display: flex;
+  justify-content: space-between;
+ 
+  margin-left: -75px;
+}
+.design{
+  margin-top: 130px;
+  margin-right: 65px;
+}

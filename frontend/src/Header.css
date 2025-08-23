@@ -1,0 +1,144 @@
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;       /* ← default: keep both on the left */
+  gap: 12px;
+  padding: 1rem 4.5rem;
+  width: 100%;
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* Brand title (unchanged) */
+.d-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    225deg,
+    #e9dcff 10%,
+    #b488f2 45%,
+    #caa7fc 55%,
+    #f3eaff 90%
+  );
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: shimmerDiagonal 3s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 5px rgba(180, 136, 242, 0.35);
+}
+
+@keyframes shimmerDiagonal {
+  0%   { background-position: 0% 100%; }
+  50%  { background-position: 100% 0%; }
+  100% { background-position: 0% 100%; }
+}
+
+/* Auth block base (kept left by default) */
+.auth-group{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin-left: 16px;                 /* slight spacing from the logo */
+  justify-content: center;
+}
+
+/* Bottom-align the greeting and the button */
+.head .auth-group {
+  align-items: flex-end; /* align bottoms of children */
+}
+
+/* Make the greeting participate cleanly in bottom alignment */
+.head .auth-group .hi {
+  display: inline-block;
+  line-height: 1;
+  margin: 0;
+  padding: 0;
+}
+
+/* Keep pill look, center label, but align bottoms with the text */
+.head .auth-group .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+  height: auto;                /* override any fixed height */
+  padding: .55rem 1.1rem;      /* keep your pill shape */
+}
+
+/* If your font makes it look ~1–2px off, nudge once here */
+.head .auth-group .btn { margin-bottom: -1px; } /* adjust to -2px if needed */
+
+.btn {
+  border: 1px solid #6f41d2;
+  background-color: #6f41d2;
+  color: white;
+  border-radius: 12px;
+  padding: 0.8rem 1.6rem;
+  font-weight: 600;
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  display: inline-flex;     /* ⬅ centers text within button */
+  align-items: center;      /* vertical centering */
+  justify-content: center;
+  
+}
+.btn-logout{
+  display: inline-flex;     /* ⬅ centers text within button */
+  align-items: center;      /* vertical centering */
+  justify-content: center;
+}
+
+.btn:hover {
+  background-color: rgba(111, 65, 210, 0.25);
+  box-shadow: inset 0 -4px 18px rgba(111, 65, 210, 0.5);
+  backdrop-filter: blur(4px);
+  transform: scale(1.04);
+}
+
+/* ========== SMALL SCREENS ONLY ========== */
+@media (max-width: 768px){
+  .head{
+    padding: 0.9rem 1.25rem;         /* tighter padding on small screens */
+  }
+  .d-title{
+    font-size: 1.4rem;
+    letter-spacing: 0.5px;
+  }
+  .auth-group{
+    margin-left: auto;               /* ← pushes auth to the far RIGHT */
+    gap: 10px;
+  }
+  .hi{ 
+    font-size: 0.9rem; 
+    max-width: 48vw; 
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .head .btn{ height: 34px; line-height: 34px; padding: 0 14px;
+    display: inline-flex;              /* use flex for centering */
+  align-items: center;               /* vertical center */
+  justify-content: center;           /* horizontal center */
+  height: 40px;                      /* fixed height for centering */
+  line-height: 1;                    /* avoid baseline offset */
+  padding: 0 1.1rem;    }
+}
+
+/* Ultra-small phones: optional tweaks */
+@media (max-width: 400px){
+  .hi{ display:none; }               /* optional: show only the Logout button */
+  .head .btn{ padding: 6px 12px; font-size: .85rem; }
+}

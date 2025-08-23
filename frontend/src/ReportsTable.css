@@ -1,0 +1,146 @@
+/* ===== Table (Reports) ===== */
+:root{
+  --ink:#ECE9FF;                 /* main text */
+  --muted:#A9A4C8;               /* secondary text */
+  --lavender:#A78BFA;            /* accent */
+  --lavender-2:#8B5CF6;          /* deeper accent */
+}
+
+.reports .table-wrap{
+  overflow:auto;
+  margin-top:12px;
+}
+
+.glass-table{
+  width:100%;
+  border-collapse:separate;
+  border-spacing:0;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.10);
+  border-radius:12px;
+  color:var(--ink);
+  backdrop-filter: blur(6px);
+}
+
+
+/* cells */
+.glass-table th,
+.glass-table td{
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+  vertical-align:middle;
+}
+
+/* header */
+.glass-table thead th{
+  text-align:left;
+  color:#e6e1ff;
+  font-weight:750;
+  background:linear-gradient(180deg, rgba(167,139,250,.12), rgba(167,139,250,.06));
+  position:sticky;
+  top:0;
+  z-index:1;
+}
+
+/* last row bottom border removal */
+.glass-table tbody tr:last-child td{ border-bottom:0; }
+
+/* zebra + hover */
+.glass-table tbody tr:nth-child(even){
+  background: rgba(255,255,255,.025);
+}
+.glass-table tbody tr:hover{
+  background: rgba(167,139,250,.10);
+  transition: background .15s ease;
+}
+
+/* Score column (2nd) pops a bit */
+.glass-table tbody td:nth-child(2){
+  text-align:left;
+  font-weight:700;
+  color:#e9e3ff;
+  padding-left:20px;
+  
+}
+
+
+
+/* links & icon buttons */
+.link{
+  color:#cbb5ff;
+  background:none;
+  border:0;
+  cursor:pointer;
+  text-decoration:underline;
+  padding:0;
+}
+.link:hover{ color:#e6ddff; }
+
+.icon-btn{
+  background:transparent;
+  border:1px solid rgba(255,255,255,.22);
+  color:#f0ecff;
+  border-radius:8px;
+  padding:4px 10px;
+  cursor:pointer;
+  line-height:1;
+}
+.icon-btn:hover{
+  background:rgba(167,139,250,.18);
+  border-color: rgba(255,255,255,.3);
+}
+
+.muted{ color:var(--muted); }
+
+/* ===== Modal ===== */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(7,5,15,.60);
+  backdrop-filter: blur(6px);
+  display:grid;
+  place-items:center;
+  z-index:999;
+}
+
+.modal-card{
+  width:min(640px,92vw);
+  background:linear-gradient(180deg,rgba(255,255,255,.07),rgba(255,255,255,.035));
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  box-shadow:0 30px 70px rgba(17,12,39,.6), inset 0 1px 0 rgba(255,255,255,.06);
+  color:var(--ink);
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.10);
+  background:linear-gradient(180deg, rgba(167,139,250,.16), rgba(167,139,250,.08));
+}
+.modal-head h4{
+  margin:0;
+  font-weight:750;
+  letter-spacing:.2px;
+  color:#f1edff;
+}
+
+.modal-body{ padding:16px; }
+.modal-body .bullets{
+  margin:0;
+  padding-left:18px;
+}
+.modal-body .bullets li{
+  margin:6px 0;
+  color:var(--ink);
+}
+
+/* Accessibility: focus rings for keyboard users */
+.link:focus,
+.icon-btn:focus{
+  outline:2px solid var(--lavender-2);
+  outline-offset:2px;
+  border-radius:8px;
+}

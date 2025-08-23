@@ -1,0 +1,76 @@
+/* Wrapper for entire section */
+.description-section {
+  padding: 120px 20px 100px;
+  text-align: center;
+  background-color: transparent;
+  overflow: hidden;
+  margin-top: -200px;
+  padding-left: 50px;
+}
+
+/* Title with gradient and animation */
+.h2-title {
+  font-size: 2.2rem;
+  font-weight: 700;
+  font-family: 'Orbitron', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 auto 1.5rem;
+  max-width: 90%;
+
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(
+    225deg,
+    #e9dcff 10%,
+    #b488f2 45%,
+    #caa7fc 55%,
+    #f3eaff 90%
+  );
+  background-size: 200% 200%;
+  background-position: 0% 0%;
+  animation: shimmerDiagonal 3s ease-in-out infinite;
+  -webkit-background-clip: text;
+  background-clip: text;
+  text-shadow: 0 0 5px rgba(180, 136, 242, 0.35);
+
+  /* Hidden by default */
+  opacity: 0;
+  transform: translateY(50px);
+  transition: all 0.7s ease-out;
+}
+
+/* Animate up when visible */
+.h2-title.animate-up {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Description text styles */
+.description-subtitle,
+.description-support,
+.description-upload-call {
+  font-size: 1.2rem;
+  color: #d1c5f3;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Optional shimmer animation for title */
+@keyframes shimmerDiagonal {
+  0% {
+    background-position: 0% 100%;
+  }
+  50% {
+    background-position: 100% 0%;
+  }
+  100% {
+    background-position: 0% 100%;
+  }
+}
+.description-upload-call{
+  font-weight: bold;
+  font-size: 1.5rem;
+}

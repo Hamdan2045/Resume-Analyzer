@@ -1,0 +1,14 @@
+/* default */
+.light-image{
+  display:block;               /* lets margin auto work */
+  margin-inline:auto;          /* center horizontally */
+  max-width:100%;
+  height:auto;
+}
+
+/* small screens */
+@media (max-width: 800px){
+  .light-image{
+    width: min(500px, 90vw);   /* shrink reasonably */
+  }
+}

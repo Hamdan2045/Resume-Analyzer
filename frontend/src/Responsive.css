@@ -1,0 +1,107 @@
+/* Tablet tweaks */
+@media (max-width: 1024px){
+  /* Upload + Results: 2 columns → 1 column */
+  .resume-analyzer-container{
+    display: grid;
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+  .right-panel{ margin-top: 8px; }
+}
+
+/* Phone tweaks */
+@media (max-width: 768px){
+  /* Header: spacing + right-align auth block */
+  .head{ padding: 12px 14px !important; }
+  .head .d-title{ font-size: 1.25rem !important; }
+
+  .auth-group{
+    margin-left: auto;              /* push to the right */
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hi{
+    font-size: 14px;
+    max-width: 56vw;                /* truncate long names nicely */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .btn{
+    padding: 8px 12px !important;
+    font-size: .95rem !important;
+  }
+  /* Center the “LOGOUT” text both ways */
+  .head .btn{
+    height: 36px;
+    line-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Upload form buttons full-width */
+  .upload-form .btn{ width: 100% !important; }
+
+  /* Progress bars slightly smaller text */
+  .result-label{ font-size: .95rem !important; }
+
+  /* Reports table: keep tabular, allow horizontal scroll, center Score */
+  .reports .table-wrap{
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch;
+  }
+  .glass-table{
+    min-width: 680px;               /* keep columns readable */
+  }
+  /* Force visible text on dark backgrounds */
+  .glass-table th,
+  .glass-table td{
+    color: #ece9ff;
+  }
+  /* Center the Score column + fixed width so numbers align visually */
+  .glass-table th:nth-child(2),
+  .glass-table td:nth-child(2){
+    text-align: center !important;
+    width: 90px;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Suggestions modal fits screen */
+  .modal-card{
+    width: 96vw !important;
+    max-height: 86vh !important;
+  }
+
+  /* Optional: center any glow/hero image on phones */
+  .light-image{
+    position: relative;
+    left: 65%;
+    transform: translateX(-50%);
+    margin-left: 0 !important;
+    max-width: 520px;
+    padding-bottom: 50px;
+    width: 90%;
+    height: auto;
+  }
+  .description-section{
+    margin-left: 100px;
+  }
+  .resume-analyzer-container{
+    margin-left: 230px;
+  }
+}
+
+/* Very small phones */
+@media (max-width: 480px){
+  .d-title{ font-size: 1.15rem !important; }
+  .upload-label textarea{ min-height: 160px; }
+
+  /* If you show the rotating/laser cluster, reduce footprint */
+  .design-showcase-wrapper{
+    width: 260px !important;
+    height: 260px !important;
+    margin: 14px auto !important;
+  }
+}

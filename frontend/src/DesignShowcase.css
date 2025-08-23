@@ -1,0 +1,123 @@
+.design-showcase-wrapper {
+  width: 410px;
+  height: 410px;
+  position: relative;
+  background-color: transparent;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 50px;
+  margin-top: 20px;
+}
+
+/* SVG Laser Beams */
+.laser-svg {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.beam {
+  stroke: #b488f2;
+  stroke-width: 2;
+  stroke-linecap: round;
+  animation: pulse-laser 2.5s infinite ease-in-out;
+  filter: drop-shadow(0 0 6px #b488f2) drop-shadow(0 0 10px #b488f2);
+}
+
+@keyframes pulse-laser {
+  0% {
+    stroke-opacity: 0;
+    stroke-dasharray: 0, 100;
+  }
+  30% {
+    stroke-opacity: 1;
+    stroke-dasharray: 50, 50;
+  }
+  60% {
+    stroke-opacity: 0.7;
+    stroke-dasharray: 100, 0;
+  }
+  100% {
+    stroke-opacity: 0;
+    stroke-dasharray: 0, 100;
+  }
+}
+
+/* Center Logo */
+.logo-center {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  z-index: 5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 50%;
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 0 12px 3px #b488f2;
+  animation: logo-pulse 2s ease-in-out infinite;
+}
+
+.logo-center img {
+  width: 75px;
+  height: 75px;
+}
+
+/* Center Logo Pulse */
+@keyframes logo-pulse {
+  0%, 100% { box-shadow: 0 0 12px 3px #b488f2; }
+  50%      { box-shadow: 0 0 20px 6px #b488f2; }
+}
+
+/* Glass Cards */
+.glass-card {
+  width: 100px;
+  height: 100px;
+  position: absolute;
+  border-radius: 16px;
+  background: rgba(180, 136, 242, 0.08);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 12px rgba(180, 136, 242, 0.3),
+              inset 0 0 6px rgba(180, 136, 242, 0.4);
+  color: #e9dcff;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  font-size: 0.95rem;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 0 0 4px #b488f2;
+  z-index: 2;
+  transition: transform 0.3s ease;
+  animation: card-hit 2.5s ease-in-out infinite;
+}
+
+.glass-card:hover {
+  transform: scale(1.08);
+  box-shadow: 0 0 18px rgba(180, 136, 242, 0.6),
+              inset 0 0 10px rgba(180, 136, 242, 0.6);
+}
+
+@keyframes card-hit {
+  0%, 100% {
+    box-shadow: 0 0 12px rgba(180, 136, 242, 0.3),
+                inset 0 0 6px rgba(180, 136, 242, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 24px rgba(255, 255, 255, 0.6),
+                inset 0 0 14px rgba(180, 136, 242, 0.7);
+  }
+}
+
+/* Corner positions */
+.top-left    { top: 0;    left: 0; }
+.top-right   { top: 0;    right: 0; }
+.bottom-left { bottom: 0; left: 0; }
+.bottom-right{ bottom: 0; right: 0; }
