@@ -158,7 +158,7 @@ export default function SignupPage() {
           </form>
 
           <p className="signin">
-            Already have an account? <a href="/login">Sign in</a>
+            Already have an account? <Link to="/login">Sign in</Link>
           </p>
         </div>
       </div>
