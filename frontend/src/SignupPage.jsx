@@ -6,10 +6,9 @@
  * ========================================================================== */
 
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./SignupPage.css";
 import { withMinDelay } from "./withMinDelay";
-import { Link } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
@@ -18,7 +17,7 @@ export default function SignupPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", password: "" });
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError]   = useState("");
   const [message, setMessage] = useState("");
 
   const onChange = (e) =>
@@ -46,7 +45,7 @@ export default function SignupPage() {
         fetch(`${API}/auth/signup`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          credentials: "include", // IMPORTANT for cookie auth
           body: JSON.stringify(form),
         }),
         900
@@ -109,6 +108,8 @@ export default function SignupPage() {
                   value={form.email}
                   onChange={onChange}
                   autoComplete="email"
+                  autoCapitalize="off"
+                  autoCorrect="off"
                   required
                 />
               </span>
@@ -150,7 +151,7 @@ export default function SignupPage() {
               </span>
             </label>
 
-            {error && <div className="mt-2" style={{ color: "#ff8a8a", fontSize: 14 }}>{error}</div>}
+            {error   && <div className="mt-2" style={{ color: "#ff8a8a", fontSize: 14 }}>{error}</div>}
             {message && <div className="mt-2" style={{ color: "#a7f3d0", fontSize: 14 }}>{message}</div>}
 
             <button className="cta" type="submit" disabled={loading}>
