@@ -21,27 +21,50 @@ app.set("trust proxy", 1); // ← REQUIRED on Render so secure cookies work behi
 const PORT = process.env.PORT || 3000;
 
 // Build allowlist once (supports comma-separated CLIENT_URLS)
-const allowedOrigins = new Set(
-  (process.env.CLIENT_URLS || process.env.CLIENT_URL || "http://localhost:5173")
-    .split(",")
-    .map(s => s.trim())
-    .filter(Boolean)
-);
+const originPatterns = (process.env.CLIENT_URLS || process.env.CLIENT_URL || "")
+  .split(",")
+  .map(s => s.trim())
+  .filter(Boolean);
 
-// Strong CORS with credentials + proper preflight handling
+// optional: log what we allow
+console.log("[CORS] patterns:", originPatterns);
+
+// simple matcher with wildcard support on hostname
+function isAllowedOrigin(origin) {
+  if (!origin) return true; // server-to-server/curl
+  try {
+    const u = new URL(origin);
+    return originPatterns.some((p) => {
+      if (!p.startsWith("http")) return false;
+      // exact match
+      if (!p.includes("*")) return p === origin;
+
+      // wildcard match on host (protocol must match)
+      const pu = new URL(p.replace("*", "wildcard"));
+      if (pu.protocol !== u.protocol) return false;
+
+      const hostPattern = pu.host
+        .replace(/[-/\\^$+?.()|[\]{}]/g, "\\.")
+        .replace("wildcard", ".*");
+
+      const re = new RegExp(`^${hostPattern}$`);
+      return re.test(u.host);
+    });
+  } catch {
+    return false;
+  }
+}
+
 const corsOptions = {
   origin(origin, cb) {
-    // allow server-to-server calls (no Origin header)
-    if (!origin) return cb(null, true);
-    if (allowedOrigins.has(origin)) return cb(null, true);
-    return cb(new Error(`Not allowed by CORS: ${origin}`));
+    if (isAllowedOrigin(origin)) return cb(null, true);
+    cb(new Error(`Not allowed by CORS: ${origin}`));
   },
   credentials: true,
 };
 
 app.use(cors(corsOptions));
-app.options(/.*/, cors(corsOptions)); // ← handle OPTIONS preflights
-
+app.options("*", cors(corsOptions));
 app.use(express.json());
 app.use(cookieParser());
 
