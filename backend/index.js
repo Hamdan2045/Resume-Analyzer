@@ -76,7 +76,7 @@ const corsOptions = {
 
 // CORS + preflights (Express 5: use "*" not ".*")
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
+app.options("/.*/", cors(corsOptions));
 
 app.use(express.json());
 app.use(cookieParser());
