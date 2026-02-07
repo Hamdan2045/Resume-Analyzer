@@ -13,8 +13,9 @@ import ReportsTable from "./ReportsTable"; // <- adjust path if needed
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 // n8n webhook (returns {parameters, suggestions, url} in some shape)
-const ANALYZE_URL = "https://employed-operate-queen-closure.trycloudflare.com/webhook/resume-upload
-";
+const ANALYZE_URL =
+  "https://employed-operate-queen-closure.trycloudflare.com/webhook/resume-upload";
+
 
 // Progress bar
 function ProgressBar({ label, percentage }) {
