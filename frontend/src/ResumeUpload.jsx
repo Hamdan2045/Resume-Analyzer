@@ -137,22 +137,29 @@ function ResumeUpload() {
       formData.append("resume", resumeFile);
       formData.append("jobDescription", jobDescription);
 
-      const response = await fetch(ANALYZE_URL, { method: "POST", body: formData });
-      if (!response.ok) throw new Error(`Server error: ${response.status} ${response.statusText}`);
+      const response = await fetch(ANALYZE_URL, {
+  method: "POST",
+  body: formData,
+});
 
-      // Try JSON first; if it fails, read text and normalize
-      let body;
-      try { body = await response.json(); }
-      catch { body = await response.text(); }
+if (!response.ok) {
+  throw new Error(`Server error: ${response.status} ${response.statusText}`);
+}
 
-      const normalized = normalizeAnalyzeResponse(body);
+// ✅ SAFE: read body ONCE
+const rawText = await response.text();
+const parsedJson = safeJsonParse(rawText);
+const body = parsedJson ?? rawText;
 
-      setAnalysisResults({
-        parameters: normalized.parameters,
-        suggestions: normalized.suggestions,
-      });
-      setImprovedResumeLink(normalized.url || null);
-      setShowResults(true);
+const normalized = normalizeAnalyzeResponse(body);
+
+setAnalysisResults({
+  parameters: normalized.parameters,
+  suggestions: normalized.suggestions,
+});
+setImprovedResumeLink(normalized.url || null);
+setShowResults(true);
+
 
       // Try to persist this run (only works when logged in)
       saveAnalysis({
