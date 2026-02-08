@@ -14,7 +14,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 // n8n webhook (returns {parameters, suggestions, url} in some shape)
 const ANALYZE_URL =
-  "https://woods-sculpture-structures-developed.trycloudflare.com//webhook/resume-upload";
+  "https://woods-sculpture-structures-developed.trycloudflare.com/webhook/resume-upload";
 
 
 // Progress bar
