@@ -11,6 +11,12 @@ import "./SignupPage.css";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
+/* =========================
+   VALIDATION HELPERS
+========================= */
+const isStrongPassword = (password) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
+
 export default function ResetPasswordPage() {
   const { token } = useParams();
   const navigate = useNavigate();
@@ -34,15 +40,24 @@ export default function ResetPasswordPage() {
 
   const onSubmit = async (e) => {
     e.preventDefault();
-    setErr(""); setMsg("");
+    setErr("");
+    setMsg("");
 
+    /* =========================
+       CLIENT-SIDE VALIDATION
+    ========================= */
     if (!password.trim() || !confirm.trim()) {
-      setErr("Please enter and confirm your new password.");
-      return;
+      return setErr("Please enter and confirm your new password.");
     }
+
+    if (!isStrongPassword(password)) {
+      return setErr(
+        "Password must be at least 8 characters and include uppercase, lowercase, number, and special character."
+      );
+    }
+
     if (password !== confirm) {
-      setErr("Passwords do not match.");
-      return;
+      return setErr("Passwords do not match.");
     }
 
     setLoading(true);
@@ -53,13 +68,14 @@ export default function ResetPasswordPage() {
         credentials: "include",
         body: JSON.stringify({ password }),
       });
+
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.message || "Failed to reset password.");
 
       setMsg("Password reset successful. Redirecting to login…");
       setTimeout(() => navigate("/login"), 1000);
     } catch (e2) {
-      setErr(e2.message);
+      setErr(e2.message || "Failed to reset password.");
     } finally {
       setLoading(false);
     }
@@ -103,8 +119,12 @@ export default function ResetPasswordPage() {
               </span>
             </label>
 
-            {err && <div className="mt-2" style={{ color: "#ff8a8a", fontSize: 14 }}>{err}</div>}
-            {msg && <div className="mt-2" style={{ color: "#a7f3d0", fontSize: 14 }}>{msg}</div>}
+            {err && (
+              <div style={{ color: "#ff8a8a", fontSize: 14 }}>{err}</div>
+            )}
+            {msg && (
+              <div style={{ color: "#a7f3d0", fontSize: 14 }}>{msg}</div>
+            )}
 
             <button className="cta" type="submit" disabled={loading}>
               {loading ? "Updating..." : "Update password"}
