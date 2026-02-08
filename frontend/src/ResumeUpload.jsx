@@ -14,7 +14,7 @@ const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 // n8n webhook (returns {parameters, suggestions, url} in some shape)
 const ANALYZE_URL =
-  "https://employed-operate-queen-closure.trycloudflare.com/webhook/resume-upload";
+  "https://segments-cheers-announce-specialties.trycloudflare.com/webhook/resume-upload";
 
 
 // Progress bar
