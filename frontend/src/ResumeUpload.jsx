@@ -20,7 +20,7 @@ function ProgressBar({ label, percentage }) {
   const [width, setWidth] = useState("0%");
 
   useEffect(() => {
-    const t = setTimeout(() => setWidth(percentage), 300);
+    const t = setTimeout(() => setWidth(percentage), 200);
     return () => clearTimeout(t);
   }, [percentage]);
 
@@ -45,23 +45,21 @@ function safeJsonParse(str) {
   }
 }
 
+function normalizeKeywords(input) {
+  if (!input) return [];
+  if (Array.isArray(input)) return input.map(k => k.trim()).filter(Boolean);
+  if (typeof input === "string")
+    return input.split(",").map(k => k.trim()).filter(Boolean);
+  return [];
+}
+
 function normalizeAnalyzeResponse(raw) {
-  if (typeof raw === "object" && raw !== null) {
-    if (Array.isArray(raw) && raw[0]?.output) {
-      const parsed = safeJsonParse(raw[0].output) || {};
-      return { ...parsed, url: raw[0].url || parsed.url || null };
-    }
-    return raw;
+  if (Array.isArray(raw) && raw[0]?.output) {
+    const parsed = safeJsonParse(raw[0].output) || {};
+    return { ...parsed, url: raw[0].url || parsed.url || null };
   }
-
-  if (typeof raw === "string") {
-    const urlMatch = raw.match(/https?:\/\/\S+\.pdf\S*/i);
-    const url = urlMatch ? urlMatch[0] : null;
-    const jsonPart = url ? raw.replace(url, "").trim() : raw.trim();
-    const parsed = safeJsonParse(jsonPart) || {};
-    return { ...parsed, url };
-  }
-
+  if (typeof raw === "object") return raw;
+  if (typeof raw === "string") return safeJsonParse(raw) || {};
   return {};
 }
 
@@ -95,9 +93,7 @@ function ResumeUpload() {
     const a = document.createElement("a");
     a.href = url;
     a.download = "Cover_Letter.txt";
-    document.body.appendChild(a);
     a.click();
-    document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
 
@@ -123,43 +119,39 @@ function ResumeUpload() {
         body: formData,
       });
 
-      if (!response.ok) {
-        throw new Error(`Server error ${response.status}`);
-      }
-
       const rawText = await response.text();
-      const parsed = safeJsonParse(rawText) ?? rawText;
-      const data = normalizeAnalyzeResponse(parsed);
+      const parsed = normalizeAnalyzeResponse(safeJsonParse(rawText) ?? rawText);
 
       setAnalysisResults({
-        parameters: data.parameters || [],
-        suggestions: data.suggestions || [],
-        roleFit: Array.isArray(data.role_fit) ? data.role_fit : [],
-        missingKeywords: data.missing_keywords || [],
-        gapAnalysis: data.gap_analysis || [],
-        coverLetter: data.cover_letter || "",
+        parameters: parsed.parameters || [],
+        suggestions: parsed.suggestions || [],
+        roleFit: Array.isArray(parsed.role_fit)
+          ? parsed.role_fit
+          : parsed.role_fit
+          ? [parsed.role_fit]
+          : [],
+        missingKeywords: normalizeKeywords(parsed.missing_keywords),
+        gapAnalysis: parsed.gap_analysis || [],
+        coverLetter: parsed.cover_letter || "",
       });
 
-      setImprovedResumeLink(data.url || null);
+      setImprovedResumeLink(parsed.url || null);
       setShowResults(true);
 
-      // Save to backend
-      try {
-        await fetch(`${API}/analysis`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          body: JSON.stringify({
-            resumeName: resumeFile.name,
-            score: overallFromParameters(data.parameters),
-            suggestions: data.suggestions || [],
-            improvedResumeUrl: data.url || null,
-          }),
-        });
-        window.dispatchEvent(new Event("analysis:changed"));
-      } catch {
-        // non-blocking
-      }
+      /* Save minimal record */
+      await fetch(`${API}/analysis`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          resumeName: resumeFile.name,
+          score: overallFromParameters(parsed.parameters),
+          suggestions: parsed.suggestions || [],
+          improvedResumeUrl: parsed.url || null,
+        }),
+      });
+
+      window.dispatchEvent(new Event("analysis:changed"));
     } catch (err) {
       console.error(err);
       setError("Failed to analyze resume.");
@@ -168,17 +160,10 @@ function ResumeUpload() {
     }
   };
 
-  const handleJDKeyDown = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      formRef.current?.requestSubmit();
-    }
-  };
-
   return (
     <>
       <section id="resume-upload" className="resume-analyzer-container">
-        {/* ================= LEFT ================= */}
+        {/* LEFT */}
         <div className="left-panel">
           <h2 className="d-title">Upload Resume & Job Description</h2>
 
@@ -198,7 +183,6 @@ function ResumeUpload() {
                 rows="5"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                onKeyDown={handleJDKeyDown}
                 placeholder="Paste the job description here..."
               />
             </label>
@@ -211,7 +195,7 @@ function ResumeUpload() {
           </form>
         </div>
 
-        {/* ================= RIGHT ================= */}
+        {/* RIGHT */}
         {showResults && analysisResults && (
           <div className="right-panel">
             <h2 className="d-title">Resume Match Report</h2>
@@ -234,14 +218,15 @@ function ResumeUpload() {
               </ul>
             </div>
 
-            {/* Role Fit (multiple) */}
+            {/* Role Matches */}
             {analysisResults.roleFit.length > 0 && (
               <div className="ai-hints">
                 <h3 className="hint-title">Best Role Matches</h3>
                 <ul>
                   {analysisResults.roleFit.map((r, i) => (
                     <li key={i}>
-                      <strong>{r.role}</strong> — {r.confidence}%
+                      <strong>{r.primary_role || r.role}</strong> —{" "}
+                      {r.confidence}%
                     </li>
                   ))}
                 </ul>
@@ -285,8 +270,8 @@ function ResumeUpload() {
             )}
 
             {/* Downloads */}
-            {improvedResumeLink && (
-              <div className="download-row">
+            <div className="download-row">
+              {improvedResumeLink && (
                 <a
                   href={improvedResumeLink}
                   target="_blank"
@@ -295,15 +280,17 @@ function ResumeUpload() {
                 >
                   📄 Download Improved Resume
                 </a>
+              )}
 
+              {analysisResults.coverLetter && (
                 <button
                   className="btn download-btn"
                   onClick={downloadCoverLetter}
                 >
                   ✉️ Download Cover Letter
                 </button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         )}
       </section>
