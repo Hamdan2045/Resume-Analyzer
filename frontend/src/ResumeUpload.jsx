@@ -83,6 +83,24 @@ function ResumeUpload() {
 
   const formRef = useRef(null);
 
+  /* ===== Download Cover Letter ===== */
+  const downloadCoverLetter = () => {
+    if (!analysisResults?.coverLetter) return;
+
+    const blob = new Blob([analysisResults.coverLetter], {
+      type: "text/plain;charset=utf-8",
+    });
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Cover_Letter.txt";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   const handleAnalyze = async (e) => {
     e.preventDefault();
     setError("");
@@ -116,16 +134,16 @@ function ResumeUpload() {
       setAnalysisResults({
         parameters: data.parameters || [],
         suggestions: data.suggestions || [],
-        roleFit: data.role_fit || null,
+        roleFit: Array.isArray(data.role_fit) ? data.role_fit : [],
         missingKeywords: data.missing_keywords || [],
         gapAnalysis: data.gap_analysis || [],
-        coverLetter: data.cover_letter || null,
+        coverLetter: data.cover_letter || "",
       });
 
       setImprovedResumeLink(data.url || null);
       setShowResults(true);
 
-      // Save to backend (if logged in)
+      // Save to backend
       try {
         await fetch(`${API}/analysis`, {
           method: "POST",
@@ -206,7 +224,7 @@ function ResumeUpload() {
               />
             ))}
 
-            {/* AI Suggestions */}
+            {/* Suggestions */}
             <div className="ai-hints">
               <h3 className="hint-title">AI Suggestions</h3>
               <ul>
@@ -216,14 +234,17 @@ function ResumeUpload() {
               </ul>
             </div>
 
-            {/* Role Fit */}
-            {analysisResults.roleFit && (
+            {/* Role Fit (multiple) */}
+            {analysisResults.roleFit.length > 0 && (
               <div className="ai-hints">
-                <h3 className="hint-title">Best Role Fit</h3>
-                <p>
-                  <strong>{analysisResults.roleFit.primary_role}</strong>{" "}
-                  ({analysisResults.roleFit.confidence}% match)
-                </p>
+                <h3 className="hint-title">Best Role Matches</h3>
+                <ul>
+                  {analysisResults.roleFit.map((r, i) => (
+                    <li key={i}>
+                      <strong>{r.role}</strong> — {r.confidence}%
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 
@@ -263,16 +284,24 @@ function ResumeUpload() {
               </div>
             )}
 
+            {/* Downloads */}
             {improvedResumeLink && (
               <div className="download-row">
                 <a
                   href={improvedResumeLink}
                   target="_blank"
+                  rel="noreferrer"
                   className="btn download-btn"
-                  download
                 >
                   📄 Download Improved Resume
                 </a>
+
+                <button
+                  className="btn download-btn"
+                  onClick={downloadCoverLetter}
+                >
+                  ✉️ Download Cover Letter
+                </button>
               </div>
             )}
           </div>
@@ -287,4 +316,3 @@ function ResumeUpload() {
 }
 
 export default ResumeUpload;
-
