@@ -269,7 +269,8 @@ function ResumeUpload() {
                 </a>
               )}
 
-              {analysisResults.coverLetter && (
+              {typeof analysisResults.coverLetter === "string" && (
+ 
                 <button
                   className="btn download-btn"
                   onClick={downloadCoverLetter}
