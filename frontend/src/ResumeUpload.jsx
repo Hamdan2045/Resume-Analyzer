@@ -131,7 +131,12 @@ function ResumeUpload() {
         suggestions: toArray(result.suggestions),
         roleFit: toArray(result.role_fit),
         missingKeywords: normalizeKeywords(result.missing_keywords),
-        gapAnalysis: toArray(result.gap_analysis),
+        gapAnalysis: toArray(result.gap_analysis).map(g =>
+  typeof g === "string"
+    ? { type: "Skill Gap", description: g }
+    : g
+),
+
         coverLetter:
           typeof result.cover_letter === "string"
             ? result.cover_letter.trim()
