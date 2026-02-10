@@ -232,6 +232,7 @@
   justify-content: center;
   text-align: center;
   min-width: 220px;            /* optional: wider button */
+  padding-left:20px;
 }
 @media (max-width: 1024px){
   .resume-analyzer-container{
@@ -242,3 +243,4 @@
   .right-panel{ order:2; }
   .left-panel{ order:1; }
 }
+
