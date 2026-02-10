@@ -11,7 +11,6 @@ import "./ResumeUpload.css";
 import ReportsTable from "./ReportsTable";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
-
 const ANALYZE_URL =
   "https://dimensional-drain-buyers-absorption.trycloudflare.com/webhook/resume-upload";
 
@@ -20,7 +19,7 @@ function ProgressBar({ label, percentage }) {
   const [width, setWidth] = useState("0%");
 
   useEffect(() => {
-    const t = setTimeout(() => setWidth(percentage), 200);
+    const t = setTimeout(() => setWidth(percentage), 150);
     return () => clearTimeout(t);
   }, [percentage]);
 
@@ -36,52 +35,52 @@ function ProgressBar({ label, percentage }) {
   );
 }
 
-/* ===================== Helpers ===================== */
-function safeJsonParse(str) {
+/* ===================== Safe Helpers ===================== */
+const safeJsonParse = (v) => {
   try {
-    return JSON.parse(str);
+    return typeof v === "string" ? JSON.parse(v) : v;
   } catch {
     return null;
   }
-}
+};
 
-function normalizeKeywords(input) {
-  if (!input) return [];
-  if (Array.isArray(input)) return input.map(k => k.trim()).filter(Boolean);
-  if (typeof input === "string")
-    return input.split(",").map(k => k.trim()).filter(Boolean);
+const toArray = (v) => {
+  if (!v) return [];
+  if (Array.isArray(v)) return v;
+  return [v];
+};
+
+const normalizeKeywords = (v) => {
+  if (!v) return [];
+  if (Array.isArray(v)) return v.map(k => k.trim()).filter(Boolean);
+  if (typeof v === "string")
+    return v
+      .replace(/[\n|;]/g, ",")
+      .split(",")
+      .map(k => k.trim())
+      .filter(Boolean);
   return [];
-}
+};
 
-function normalizeAnalyzeResponse(raw) {
-  if (Array.isArray(raw) && raw[0]?.output) {
-    const parsed = safeJsonParse(raw[0].output) || {};
-    return { ...parsed, url: raw[0].url || parsed.url || null };
-  }
-  if (typeof raw === "object") return raw;
-  if (typeof raw === "string") return safeJsonParse(raw) || {};
-  return {};
-}
-
-function overallFromParameters(parameters = []) {
+const overallFromParameters = (parameters = []) => {
   if (!parameters.length) return 0;
   const nums = parameters.map(p => Number(p.score) || 0);
   return Math.round(nums.reduce((a, b) => a + b, 0) / nums.length);
-}
+};
 
 /* ===================== Component ===================== */
 function ResumeUpload() {
   const [resumeFile, setResumeFile] = useState(null);
   const [jobDescription, setJobDescription] = useState("");
-  const [showResults, setShowResults] = useState(false);
   const [analysisResults, setAnalysisResults] = useState(null);
   const [improvedResumeLink, setImprovedResumeLink] = useState(null);
+  const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const formRef = useRef(null);
 
-  /* ===== Download Cover Letter ===== */
+  /* ===== Cover Letter Download ===== */
   const downloadCoverLetter = () => {
     if (!analysisResults?.coverLetter) return;
 
@@ -97,12 +96,13 @@ function ResumeUpload() {
     URL.revokeObjectURL(url);
   };
 
+  /* ===================== Analyze ===================== */
   const handleAnalyze = async (e) => {
     e.preventDefault();
     setError("");
 
     if (!resumeFile || !jobDescription) {
-      alert("Please upload a resume and job description.");
+      alert("Please upload a resume and paste a job description.");
       return;
     }
 
@@ -114,59 +114,59 @@ function ResumeUpload() {
       formData.append("resume", resumeFile);
       formData.append("jobDescription", jobDescription);
 
-      const response = await fetch(ANALYZE_URL, {
+      const res = await fetch(ANALYZE_URL, {
         method: "POST",
         body: formData,
       });
 
-      const rawText = await response.text();
-      const parsed = normalizeAnalyzeResponse(safeJsonParse(rawText) ?? rawText);
+      const rawText = await res.text();
+      const parsed = safeJsonParse(rawText)?.[0]?.output
+        ? safeJsonParse(safeJsonParse(rawText)[0].output)
+        : safeJsonParse(rawText);
 
-      setAnalysisResults({
-        parameters: parsed.parameters || [],
-        suggestions: parsed.suggestions || [],
-        roleFit: Array.isArray(parsed.role_fit)
-          ? parsed.role_fit
-          : parsed.role_fit
-          ? [parsed.role_fit]
-          : [],
-        missingKeywords: normalizeKeywords(parsed.missing_keywords),
-        gapAnalysis: parsed.gap_analysis || [],
+      const result = parsed || {};
+
+      const normalized = {
+        parameters: toArray(result.parameters),
+        suggestions: toArray(result.suggestions),
+        roleFit: toArray(result.role_fit),
+        missingKeywords: normalizeKeywords(result.missing_keywords),
+        gapAnalysis: toArray(result.gap_analysis),
         coverLetter:
-  typeof parsed.cover_letter === "string"
-    ? parsed.cover_letter.trim()
-    : "",
+          typeof result.cover_letter === "string"
+            ? result.cover_letter.trim()
+            : "",
+      };
 
-      });
-
-      setImprovedResumeLink(parsed.url || null);
+      setAnalysisResults(normalized);
+      setImprovedResumeLink(result.url || null);
       setShowResults(true);
 
-      /* Save minimal record */
       await fetch(`${API}/analysis`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
           resumeName: resumeFile.name,
-          score: overallFromParameters(parsed.parameters),
-          suggestions: parsed.suggestions || [],
-          improvedResumeUrl: parsed.url || null,
+          score: overallFromParameters(normalized.parameters),
+          suggestions: normalized.suggestions,
+          improvedResumeUrl: result.url || null,
         }),
       });
 
       window.dispatchEvent(new Event("analysis:changed"));
     } catch (err) {
       console.error(err);
-      setError("Failed to analyze resume.");
+      setError("Resume analysis failed.");
     } finally {
       setLoading(false);
     }
   };
 
+  /* ===================== Render ===================== */
   return (
     <>
-      <section id="resume-upload" className="resume-analyzer-container">
+      <section className="resume-analyzer-container">
         {/* LEFT */}
         <div className="left-panel">
           <h2 className="d-title">Upload Resume & Job Description</h2>
@@ -187,7 +187,7 @@ function ResumeUpload() {
                 rows="5"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste the job description here..."
+                placeholder="Paste job description here..."
               />
             </label>
 
@@ -214,7 +214,7 @@ function ResumeUpload() {
 
             {/* Suggestions */}
             <div className="ai-hints">
-              <h3 className="hint-title">AI Suggestions</h3>
+              <h3>AI Suggestions</h3>
               <ul>
                 {analysisResults.suggestions.map((s, i) => (
                   <li key={i}>💡 {s}</li>
@@ -222,25 +222,24 @@ function ResumeUpload() {
               </ul>
             </div>
 
-            {/* Role Matches */}
+            {/* Roles */}
             {analysisResults.roleFit.length > 0 && (
               <div className="ai-hints">
-                <h3 className="hint-title">Best Role Matches</h3>
+                <h3>Suggested Roles</h3>
                 <ul>
                   {analysisResults.roleFit.map((r, i) => (
                     <li key={i}>
-                      <strong>{r.primary_role || r.role}</strong> —{" "}
-                      {r.confidence}%
+                      <strong>{r.primary_role || r.role}</strong> — {r.confidence}%
                     </li>
                   ))}
                 </ul>
               </div>
             )}
 
-            {/* Missing Keywords */}
+            {/* Keywords */}
             {analysisResults.missingKeywords.length > 0 && (
               <div className="ai-hints">
-                <h3 className="hint-title">Missing Keywords</h3>
+                <h3>Missing Keywords</h3>
                 <div className="keyword-list">
                   {analysisResults.missingKeywords.map((k, i) => (
                     <span key={i} className="keyword-chip">{k}</span>
@@ -249,61 +248,41 @@ function ResumeUpload() {
               </div>
             )}
 
-            {/* Gap Analysis */}
-            {analysisResults.gapAnalysis.length > 0 && (
-              <div className="ai-hints">
-                <h3 className="hint-title">Gap Analysis</h3>
-                <ul>
-                  {analysisResults.gapAnalysis.map((g, i) => (
-                    <li key={i}>
-                      <strong>{g.type}:</strong> {g.description}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-
             {/* Cover Letter */}
             {analysisResults.coverLetter && (
               <div className="ai-hints">
-                <h3 className="hint-title">AI Cover Letter</h3>
-                <pre className="cover-letter">
-                  {analysisResults.coverLetter}
-                </pre>
+                <h3>AI Cover Letter</h3>
+                <pre className="cover-letter">{analysisResults.coverLetter}</pre>
               </div>
             )}
 
             {/* Downloads */}
-           
-<div className="download-row">
-  {improvedResumeLink && (
-    <a
-      href={improvedResumeLink}
-      target="_blank"
-      rel="noreferrer"
-      className="btn download-btn"
-    >
-      📄 Download Improved Resume
-    </a>
-  )}
+            <div className="download-row">
+              {improvedResumeLink && (
+                <a
+                  href={improvedResumeLink}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="btn download-btn"
+                >
+                  📄 Download Improved Resume
+                </a>
+              )}
 
-  {analysisResults.coverLetter?.length > 0 && (
-    <button
-      className="btn download-btn"
-      onClick={downloadCoverLetter}
-    >
-      ✉️ Download Cover Letter
-    </button>
-  )}
-</div>
-
+              {analysisResults.coverLetter && (
+                <button
+                  className="btn download-btn"
+                  onClick={downloadCoverLetter}
+                >
+                  ✉️ Download Cover Letter
+                </button>
+              )}
+            </div>
           </div>
         )}
       </section>
 
-      <div className="reports-below">
-        <ReportsTable />
-      </div>
+      <ReportsTable />
     </>
   );
 }
