@@ -12,7 +12,7 @@ import ReportsTable from "./ReportsTable";
 
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 const ANALYZE_URL =
-  "https://attributes-blank-cod-hazardous.trycloudflare.com//webhook/resume-upload";
+  "https://attributes-blank-cod-hazardous.trycloudflare.com/webhook/resume-upload";
 
 /* ===================== Progress Bar ===================== */
 function ProgressBar({ label = "", percentage = "0%" }) {
