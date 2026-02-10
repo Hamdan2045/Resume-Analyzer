@@ -13,7 +13,7 @@ import ReportsTable from "./ReportsTable";
 const API = import.meta.env.VITE_API_URL || "http://localhost:3000/api";
 
 const ANALYZE_URL =
-  "https://threaded-flyer-victor-assembled.trycloudflare.com/webhook/resume-upload";
+  "https://dimensional-drain-buyers-absorption.trycloudflare.com/webhook/resume-upload";
 
 /* ===================== Progress Bar ===================== */
 function ProgressBar({ label, percentage }) {
