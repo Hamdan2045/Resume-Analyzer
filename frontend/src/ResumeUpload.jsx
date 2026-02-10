@@ -139,7 +139,7 @@ function ResumeUpload() {
 
         coverLetter:
           typeof result.cover_letter === "string"
-            ? result.cover_letter.trim()
+            ? result.cover_letter
             : "",
       };
 
