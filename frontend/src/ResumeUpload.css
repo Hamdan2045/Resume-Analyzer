@@ -234,6 +234,20 @@
   min-width: 220px;            /* optional: wider button */
   padding-left:20px;
 }
+.keyword-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px; /* ← THIS creates space between words */
+}
+
+.keyword-chip {
+  padding: 6px 10px;
+  border-radius: 14px;
+  background: #eef2ff;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
 @media (max-width: 1024px){
   .resume-analyzer-container{
     display:grid;
@@ -243,4 +257,5 @@
   .right-panel{ order:2; }
   .left-panel{ order:1; }
 }
+
 
