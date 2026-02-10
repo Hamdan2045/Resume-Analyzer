@@ -132,7 +132,11 @@ function ResumeUpload() {
           : [],
         missingKeywords: normalizeKeywords(parsed.missing_keywords),
         gapAnalysis: parsed.gap_analysis || [],
-        coverLetter: parsed.cover_letter || "",
+        coverLetter:
+  typeof parsed.cover_letter === "string"
+    ? parsed.cover_letter.trim()
+    : "",
+
       });
 
       setImprovedResumeLink(parsed.url || null);
@@ -270,27 +274,29 @@ function ResumeUpload() {
             )}
 
             {/* Downloads */}
-            <div className="download-row">
-              {improvedResumeLink && (
-                <a
-                  href={improvedResumeLink}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="btn download-btn"
-                >
-                  📄 Download Improved Resume
-                </a>
-              )}
+           
+<div className="download-row">
+  {improvedResumeLink && (
+    <a
+      href={improvedResumeLink}
+      target="_blank"
+      rel="noreferrer"
+      className="btn download-btn"
+    >
+      📄 Download Improved Resume
+    </a>
+  )}
 
-              {analysisResults.coverLetter && (
-                <button
-                  className="btn download-btn"
-                  onClick={downloadCoverLetter}
-                >
-                  ✉️ Download Cover Letter
-                </button>
-              )}
-            </div>
+  {analysisResults.coverLetter?.length > 0 && (
+    <button
+      className="btn download-btn"
+      onClick={downloadCoverLetter}
+    >
+      ✉️ Download Cover Letter
+    </button>
+  )}
+</div>
+
           </div>
         )}
       </section>
