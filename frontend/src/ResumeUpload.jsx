@@ -72,6 +72,10 @@ function ResumeUpload() {
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const hasCoverLetter =
+  typeof analysisResults?.coverLetter === "string" &&
+  analysisResults.coverLetter.trim().length > 0;
+
 
   const formRef = useRef(null);
 
@@ -263,12 +267,15 @@ function ResumeUpload() {
               </div>
             )}
 
-            {analysisResults.coverLetter && (
-              <div className="ai-hints">
-                <h3>AI Cover Letter</h3>
-                <pre className="cover-letter">{analysisResults.coverLetter}</pre>
-              </div>
-            )}
+            {hasCoverLetter && (
+  <div className="ai-hints">
+    <h3>AI Cover Letter</h3>
+    <pre className="cover-letter">
+      {analysisResults.coverLetter}
+    </pre>
+  </div>
+)}
+
 
             <div className="download-row">
               {improvedResumeLink && (
@@ -282,15 +289,16 @@ function ResumeUpload() {
                 </a>
               )}
 
-              {analysisResults.coverLetter && (
-                <button
-                  type="button"
-                  className="btn download-btn"
-                  onClick={downloadCoverLetter}
-                >
-                  ✉️ Download Cover Letter
-                </button>
-              )}
+              {hasCoverLetter && (
+  <button
+    type="button"
+    className="btn download-btn"
+    onClick={downloadCoverLetter}
+  >
+    ✉️ Download Cover Letter
+  </button>
+)}
+
             </div>
           </div>
         )}
