@@ -15,12 +15,11 @@ const ANALYZE_URL =
   "https://outside-served-catering-papers.trycloudflare.com/webhook/resume-upload";
 
 /* ===================== Progress Bar ===================== */
-function ProgressBar({ label, percentage }) {
+function ProgressBar({ label = "", percentage = "0%" }) {
   const [width, setWidth] = useState("0%");
 
   useEffect(() => {
-    const t = setTimeout(() => setWidth(percentage), 150);
-    return () => clearTimeout(t);
+    setWidth(percentage);
   }, [percentage]);
 
   return (
@@ -35,7 +34,7 @@ function ProgressBar({ label, percentage }) {
   );
 }
 
-/* ===================== Safe Helpers ===================== */
+/* ===================== Helpers ===================== */
 const safeJsonParse = (v) => {
   try {
     return typeof v === "string" ? JSON.parse(v) : v;
@@ -44,15 +43,11 @@ const safeJsonParse = (v) => {
   }
 };
 
-const toArray = (v) => {
-  if (!v) return [];
-  if (Array.isArray(v)) return v;
-  return [v];
-};
+const ensureArray = (v) => (Array.isArray(v) ? v : v ? [v] : []);
 
 const normalizeKeywords = (v) => {
   if (!v) return [];
-  if (Array.isArray(v)) return v.map(k => k.trim()).filter(Boolean);
+  if (Array.isArray(v)) return v.map(String).map(k => k.trim()).filter(Boolean);
   if (typeof v === "string")
     return v
       .replace(/[\n|;]/g, ",")
@@ -62,10 +57,10 @@ const normalizeKeywords = (v) => {
   return [];
 };
 
-const overallFromParameters = (parameters = []) => {
-  if (!parameters.length) return 0;
-  const nums = parameters.map(p => Number(p.score) || 0);
-  return Math.round(nums.reduce((a, b) => a + b, 0) / nums.length);
+const overallFromParameters = (parameters) => {
+  if (!Array.isArray(parameters) || !parameters.length) return 0;
+  const total = parameters.reduce((sum, p) => sum + (Number(p.score) || 0), 0);
+  return Math.round(total / parameters.length);
 };
 
 /* ===================== Component ===================== */
@@ -80,34 +75,27 @@ function ResumeUpload() {
 
   const formRef = useRef(null);
 
-  /* ===== Cover Letter Download ===== */
- const downloadCoverLetter = () => {
-  const text = analysisResults?.coverLetter;
+  /* ===================== Cover Letter Download ===================== */
+  const downloadCoverLetter = () => {
+    if (!analysisResults?.coverLetter) return;
 
-  if (!text || text.length < 5) {
-    alert("Cover letter is empty.");
-    return;
-  }
+    const blob = new Blob([analysisResults.coverLetter], {
+      type: "text/plain;charset=utf-8",
+    });
 
-  const blob = new Blob([text], {
-    type: "text/plain;charset=utf-8",
-  });
-
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "Cover_Letter.txt";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-};
-
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Cover_Letter.txt";
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   /* ===================== Analyze ===================== */
   const handleAnalyze = async (e) => {
     e.preventDefault();
     setError("");
+    setShowResults(false);
 
     if (!resumeFile || !jobDescription) {
       alert("Please upload a resume and paste a job description.");
@@ -115,7 +103,6 @@ function ResumeUpload() {
     }
 
     setLoading(true);
-    setShowResults(false);
 
     try {
       const formData = new FormData();
@@ -128,31 +115,34 @@ function ResumeUpload() {
       });
 
       const rawText = await res.text();
-      const parsed = safeJsonParse(rawText)?.[0]?.output
-        ? safeJsonParse(safeJsonParse(rawText)[0].output)
-        : safeJsonParse(rawText);
 
-      const result = parsed || {};
+      const parsed =
+        safeJsonParse(rawText)?.[0]?.output
+          ? safeJsonParse(safeJsonParse(rawText)[0].output)
+          : safeJsonParse(rawText);
+
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("Invalid AI response");
+      }
 
       const normalized = {
-        parameters: toArray(result.parameters),
-        suggestions: toArray(result.suggestions),
-        roleFit: toArray(result.role_fit),
-        missingKeywords: normalizeKeywords(result.missing_keywords),
-        gapAnalysis: toArray(result.gap_analysis).map(g =>
-  typeof g === "string"
-    ? { type: "Skill Gap", description: g }
-    : g
-),
-
+        parameters: ensureArray(parsed.parameters),
+        suggestions: ensureArray(parsed.suggestions),
+        roleFit: ensureArray(parsed.role_fit),
+        missingKeywords: normalizeKeywords(parsed.missing_keywords),
+        gapAnalysis: ensureArray(parsed.gap_analysis).map(g =>
+          typeof g === "string"
+            ? { type: "Skill Gap", description: g }
+            : g
+        ),
         coverLetter:
-          typeof result.cover_letter === "string"
-            ? result.cover_letter
+          typeof parsed.cover_letter === "string"
+            ? parsed.cover_letter
             : "",
       };
 
       setAnalysisResults(normalized);
-      setImprovedResumeLink(result.url || null);
+      setImprovedResumeLink(parsed.url || null);
       setShowResults(true);
 
       await fetch(`${API}/analysis`, {
@@ -163,7 +153,7 @@ function ResumeUpload() {
           resumeName: resumeFile.name,
           score: overallFromParameters(normalized.parameters),
           suggestions: normalized.suggestions,
-          improvedResumeUrl: result.url || null,
+          improvedResumeUrl: parsed.url || null,
         }),
       });
 
@@ -200,7 +190,6 @@ function ResumeUpload() {
                 rows="5"
                 value={jobDescription}
                 onChange={(e) => setJobDescription(e.target.value)}
-                placeholder="Paste job description here..."
               />
             </label>
 
@@ -220,36 +209,36 @@ function ResumeUpload() {
             {analysisResults.parameters.map((p, i) => (
               <ProgressBar
                 key={i}
-                label={p.name}
-                percentage={`${p.score}%`}
+                label={p.name || `Metric ${i + 1}`}
+                percentage={`${p.score || 0}%`}
               />
             ))}
 
-            {/* Suggestions */}
-            <div className="ai-hints">
-              <h3>AI Suggestions</h3>
-              <ul>
-                {analysisResults.suggestions.map((s, i) => (
-                  <li key={i}>💡 {s}</li>
-                ))}
-              </ul>
-            </div>
+            {analysisResults.suggestions.length > 0 && (
+              <div className="ai-hints">
+                <h3>AI Suggestions</h3>
+                <ul>
+                  {analysisResults.suggestions.map((s, i) => (
+                    <li key={i}>💡 {s}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            {/* Roles */}
             {analysisResults.roleFit.length > 0 && (
               <div className="ai-hints">
                 <h3>Suggested Roles</h3>
                 <ul>
                   {analysisResults.roleFit.map((r, i) => (
                     <li key={i}>
-                      <strong>{r.primary_role || r.role}</strong> — {r.confidence}%
+                      <strong>{r.primary_role || r.role || r}</strong>
+                      {r.confidence ? ` — ${r.confidence}%` : ""}
                     </li>
                   ))}
                 </ul>
               </div>
             )}
 
-            {/* Keywords */}
             {analysisResults.missingKeywords.length > 0 && (
               <div className="ai-hints">
                 <h3>Missing Keywords</h3>
@@ -260,23 +249,20 @@ function ResumeUpload() {
                 </div>
               </div>
             )}
-            {/* Gap Analysis */}
-{analysisResults.gapAnalysis.length > 0 && (
-  <div className="ai-hints">
-    <h3>Gap Analysis</h3>
-    <ul>
-      {analysisResults.gapAnalysis.map((g, i) => (
-        <li key={i}>
-          <strong>{g.type || "Gap"}:</strong>{" "}
-          {g.description || g}
-        </li>
-      ))}
-    </ul>
-  </div>
-)}
 
+            {analysisResults.gapAnalysis.length > 0 && (
+              <div className="ai-hints">
+                <h3>Gap Analysis</h3>
+                <ul>
+                  {analysisResults.gapAnalysis.map((g, i) => (
+                    <li key={i}>
+                      <strong>{g.type || "Gap"}:</strong> {g.description}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
 
-            {/* Cover Letter */}
             {analysisResults.coverLetter && (
               <div className="ai-hints">
                 <h3>AI Cover Letter</h3>
@@ -284,7 +270,6 @@ function ResumeUpload() {
               </div>
             )}
 
-            {/* Downloads */}
             <div className="download-row">
               {improvedResumeLink && (
                 <a
@@ -297,10 +282,9 @@ function ResumeUpload() {
                 </a>
               )}
 
-              {!!analysisResults.coverLetter && (
- 
- 
+              {analysisResults.coverLetter && (
                 <button
+                  type="button"
                   className="btn download-btn"
                   onClick={downloadCoverLetter}
                 >
@@ -318,3 +302,4 @@ function ResumeUpload() {
 }
 
 export default ResumeUpload;
+
