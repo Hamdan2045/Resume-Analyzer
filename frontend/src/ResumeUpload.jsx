@@ -81,20 +81,28 @@ function ResumeUpload() {
   const formRef = useRef(null);
 
   /* ===== Cover Letter Download ===== */
-  const downloadCoverLetter = () => {
-    if (!analysisResults?.coverLetter) return;
+ const downloadCoverLetter = () => {
+  const text = analysisResults?.coverLetter;
 
-    const blob = new Blob([analysisResults.coverLetter], {
-      type: "text/plain;charset=utf-8",
-    });
+  if (!text || text.length < 5) {
+    alert("Cover letter is empty.");
+    return;
+  }
 
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "Cover_Letter.txt";
-    a.click();
-    URL.revokeObjectURL(url);
-  };
+  const blob = new Blob([text], {
+    type: "text/plain;charset=utf-8",
+  });
+
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "Cover_Letter.txt";
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+};
+
 
   /* ===================== Analyze ===================== */
   const handleAnalyze = async (e) => {
@@ -289,7 +297,8 @@ function ResumeUpload() {
                 </a>
               )}
 
-              {typeof analysisResults.coverLetter === "string" && (
+              {!!analysisResults.coverLetter && (
+ 
  
                 <button
                   className="btn download-btn"
