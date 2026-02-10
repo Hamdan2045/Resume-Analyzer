@@ -267,14 +267,7 @@ function ResumeUpload() {
               </div>
             )}
 
-            {hasCoverLetter && (
-  <div className="ai-hints">
-    <h3>AI Cover Letter</h3>
-    <pre className="cover-letter">
-      {analysisResults.coverLetter}
-    </pre>
-  </div>
-)}
+        
 
 
             <div className="download-row">
