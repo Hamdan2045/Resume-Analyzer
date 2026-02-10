@@ -252,6 +252,21 @@ function ResumeUpload() {
                 </div>
               </div>
             )}
+            {/* Gap Analysis */}
+{analysisResults.gapAnalysis.length > 0 && (
+  <div className="ai-hints">
+    <h3>Gap Analysis</h3>
+    <ul>
+      {analysisResults.gapAnalysis.map((g, i) => (
+        <li key={i}>
+          <strong>{g.type || "Gap"}:</strong>{" "}
+          {g.description || g}
+        </li>
+      ))}
+    </ul>
+  </div>
+)}
+
 
             {/* Cover Letter */}
             {analysisResults.coverLetter && (
