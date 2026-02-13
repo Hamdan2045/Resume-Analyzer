@@ -5,7 +5,7 @@
   justify-content: center; /* centers vertically in section */
   padding: 0 4rem;
   margin-top: 40px;
-
+  left:0;
   margin-bottom: 0;
   text-align: left; /* VERY IMPORTANT to avoid centered text */
 }
@@ -29,13 +29,7 @@
   font-size: 3.8rem;
   font-weight: 700;
 }
-.hero-section {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  min-height: 100vh;
-  padding: 0 6rem;
-}
+
 
 
 .cursor {
@@ -79,6 +73,7 @@
   background-color: rgba(111, 65, 210, 0.25);
   box-shadow: inset 0 -4px 20px rgba(111, 65, 210, 0.5);
 }
+
 
 
 
